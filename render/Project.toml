@@ -1,0 +1,7 @@
+[deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+GeoFluidLBM = "f75c456e-534a-4a3b-9f4a-d21279de6aa9"
+
+[compat]
+CairoMakie = "0.15.10"
+julia = "1.10"

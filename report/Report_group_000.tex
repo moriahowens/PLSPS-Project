@@ -1,0 +1,211 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{caption}
+
+% Prompt text. Delete every \prompt{...} from your final report.
+\newcommand{\prompt}[1]{{\itshape\color{gray}#1\par}\medskip}
+
+\setcounter{tocdepth}{2}
+
+\title{\textbf{PLSPS 2026 Assignment Report} \\ \textbf{Parallelising a Lattice Boltzmann Fluid Simulation}}
+% Do not start a line after \\ with a square bracket. LaTeX reads it as a spacing argument.
+\author{%
+  Group [NUMBER] \\
+  Name 1 (VUnetID 1) \\
+  Name 2 (VUnetID 2)%
+}
+\date{2026}
+
+\begin{document}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{diagrams/vua.png}
+\end{figure}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section*{How to use this template}
+
+Replace every italic prompt with your own text, then delete the prompt. Keep the five numbered
+sections and the appendix in the order given. Limit the report to 5 pages, including tables
+and figures.
+
+The sections follow the order of the tasks in the assignment specification. See the specification
+for the grading scheme and for the definitions of the metrics you report here.
+
+\section{Implementation}
+
+\prompt{Describe how you parallelised the solver. Answer each of the questions below. Refer to your
+code where it helps, but do not paste large listings.}
+
+\subsection*{Decomposition and work mapping}
+
+\prompt{How does the domain decomposition take place, and how do you map grid columns to ranks?
+State how many columns each rank owns.}
+
+\subsection*{Ghost column exchange}
+
+\prompt{How did you implement the exchange of ghost columns? State which MPI calls you used, and
+where in the timestep the exchange happens. Explain why the exchange is necessary at that point.}
+
+\subsection*{Boundary conditions across ranks}
+
+\prompt{How do you apply the inlet and outlet boundary conditions across ranks? Explain how the
+edge ranks differ from the interior ranks.}
+
+\subsection*{Gathering the result}
+
+\prompt{How do you gather the final field onto rank 0?}
+
+\section{Verification}
+
+\prompt{State the outcome of the provided test at 2 ranks and at 4 ranks. Report the relative L2
+error between \texttt{run\_par} and \texttt{run\_seq}, and the error of each solver against the
+analytical parabola. If either rank count fails, say so here and describe what you believe causes
+the failure.}
+
+\section{Benchmarking}
+
+\subsection*{Experimental setup}
+
+\prompt{Describe how you produced your measurements. Cover the cluster you used, the rank counts
+you tested, how ranks map to nodes at each rank count, the number of repeats, and which summary
+statistic you report.}
+
+\subsection*{Scaling results}
+
+\prompt{Complete one table per grid. The $P = 1$ row is your sequential baseline.}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$P$ & $T_P$ (s) & $S(P)$ & $E(P)$ & comm / total \\
+\midrule
+1  & & 1.00 & 1.00 & \\
+2  & & & & \\
+4  & & & & \\
+8  & & & & \\
+16 & & & & \\
+\bottomrule
+\end{tabular}
+\caption{Strong scaling on the small grid ($256 \times 256$, $n_t = 50$).}
+\label{tab:small}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$P$ & $T_P$ (s) & $S(P)$ & $E(P)$ & comm / total \\
+\midrule
+1  & & 1.00 & 1.00 & \\
+2  & & & & \\
+4  & & & & \\
+8  & & & & \\
+16 & & & & \\
+\bottomrule
+\end{tabular}
+\caption{Strong scaling on the medium grid ($512 \times 512$, $n_t = 50$).}
+\label{tab:medium}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$P$ & $T_P$ (s) & $S(P)$ & $E(P)$ & comm / total \\
+\midrule
+1  & & 1.00 & 1.00 & \\
+2  & & & & \\
+4  & & & & \\
+8  & & & & \\
+16 & & & & \\
+\bottomrule
+\end{tabular}
+\caption{Strong scaling on the large grid ($1024 \times 1024$, $n_t = 50$).}
+\label{tab:large}
+\end{table}
+
+\subsection*{Scaling figures}
+
+\prompt{Produce the three figures below. Each figure must plot all three grids as separate series,
+distinguished by colour or marker, with labelled axes and a legend. Uncomment the
+\texttt{includegraphics} line and insert your own figure.}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth]{}
+    \caption{Speedup $S(P)$ against $P$ for all three grids. Use log--log axes (base 2) and include
+    the ideal line $S(P) = P$.}
+    \label{fig:speedup}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth]{}
+    \caption{Parallel efficiency $E(P)$ against $P$ for all three grids. Use a logarithmic $x$-axis
+    (base 2) and a linear $y$-axis, and include the ideal line $E(P) = 1$.}
+    \label{fig:efficiency}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.7\linewidth]{}
+    \caption{Communication fraction (comm / total) against $P$ for all three grids. Use a
+    logarithmic $x$-axis (base 2) and a linear $y$-axis.}
+    \label{fig:comm}
+\end{figure}
+
+\section{Analysis}
+
+\prompt{Answer each of the questions below using your own measurements. Refer to your tables and
+figures by number.}
+
+\subsection*{Effect of grid size}
+
+\prompt{How does grid size affect overall scalability? Explain the behaviour you observe using the
+ratio of computation to communication.}
+
+\subsection*{The small grid at high rank counts}
+
+\prompt{On the small grid ($256 \times 256$), compute how many columns each rank owns at $P = 8$
+and at $P = 16$. Compute the ratio of ghost columns exchanged to owned columns in each case. Use
+your measured communication fractions to confirm the trend.}
+
+%\subsection*{Crossing two nodes}
+%
+%\prompt{At $P = 32$ your simulation runs across two physical nodes. Compute the step speedup
+%$T_{16} / T_{32}$ for each grid. How close is each value to the ideal of $2\times$, and why do they
+%differ?}
+
+\section{Conclusion}
+
+\subsection*{Summary}
+
+\prompt{Summarise the main findings of your scaling analysis. Did your parallel implementation
+behave as you expected? If not, what surprised you?}
+
+\subsection*{Further work}
+
+\prompt{Name one concrete change that would let the solver scale further, and explain why it would
+help.}
+
+\appendix
+
+\section{Use of AI tools}
+
+\prompt{List the AI tools you used while working on this assignment and state what you used each
+one for. If you used none, state that.}
+
+\end{document}
